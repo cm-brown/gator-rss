@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"github.com/cm-brown/gator-rss/internal/config"
+)
 
 func main() {
-	fmt.Println("Hello World")
+	config.Load_json()
 }
