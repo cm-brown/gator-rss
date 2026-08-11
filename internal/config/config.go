@@ -12,11 +12,11 @@ type Config struct {
 	Username string `json:"current_user_name"`
 }
 
-func Load_json() {
+func Load_json() (Config, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Println("error finding user home directory")
-		return
+		return Config{}, err
 	}
 
 	path := filepath.Join(home, ".gatorconfig.json")
@@ -24,14 +24,14 @@ func Load_json() {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Println("error reading config file:", err)
-		return
+		return Config{}, err
 	}
 
 	var cfg Config
 	if err := json.Unmarshal(data, &cfg); err != nil {
 		fmt.Println("error parsing JSON:", err)
-		return
+		return Config{}, err
 	}
 
-	fmt.Println(cfg)
+	return cfg, nil
 }
