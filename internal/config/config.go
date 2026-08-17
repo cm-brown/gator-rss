@@ -12,15 +12,30 @@ type Config struct {
 	Username string `json:"current_user_name"`
 }
 
-func Load_json() (Config, error) {
+func getConfigFilePath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Println("error finding user home directory")
-		return Config{}, err
+		return "", err
 	}
 
 	path := filepath.Join(home, ".gatorconfig.json")
 
+	return path, nil
+}
+
+func (c Config) SetUser(username string) error {
+	c.Username = username
+	err := write(c)
+	if err != nil {
+		fmt.Println("error fetching username")
+		return err
+	}
+	return nil
+}
+
+func Load_json() (Config, error) {
+	path, err := getConfigFilePath()
 	data, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Println("error reading config file:", err)
