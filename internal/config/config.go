@@ -15,27 +15,42 @@ type Config struct {
 func getConfigFilePath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		fmt.Println("error finding user home directory")
-		return "", err
+		return "", fmt.Errorf("error finding user home directory")
 	}
-
 	path := filepath.Join(home, ".gatorconfig.json")
-
 	return path, nil
+}
+
+func write(cfg Config) error {
+	path, err := getConfigFilePath()
+	if err != nil {
+		return fmt.Errorf("Error retreiving config file.")
+	}
+	data, err := json.Marshal(cfg)
+	if err != nil {
+		return fmt.Errorf("Marshaling config: %w", err)
+	}
+	if err := os.WriteFile(path, data, 0644); err != nil {
+		return fmt.Errorf("Failed to write file: %w", err)
+	}
+	return nil
 }
 
 func (c Config) SetUser(username string) error {
 	c.Username = username
 	err := write(c)
 	if err != nil {
-		fmt.Println("error fetching username")
-		return err
+		return fmt.Errorf("error fetching username")
 	}
 	return nil
 }
 
 func Load_json() (Config, error) {
 	path, err := getConfigFilePath()
+	if err != nil {
+		fmt.Println("error fetching the home directory")
+		return Config{}, err
+	}
 	data, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Println("error reading config file:", err)
