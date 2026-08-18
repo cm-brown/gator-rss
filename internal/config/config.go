@@ -12,19 +12,21 @@ type Config struct {
 	Username string `json:"current_user_name"`
 }
 
+const configFileName = ".gatorconfig.json"
+
 func getConfigFilePath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return "", fmt.Errorf("error finding user home directory")
+		return "", fmt.Errorf("error finding user home directory: %w", err)
 	}
-	path := filepath.Join(home, ".gatorconfig.json")
+	path := filepath.Join(home, configFileName)
 	return path, nil
 }
 
-func write(cfg Config) error {
+func write(cfg *Config) error {
 	path, err := getConfigFilePath()
 	if err != nil {
-		return fmt.Errorf("Error retreiving config file.")
+		return fmt.Errorf("Error retreiving config file: %w", err)
 	}
 	data, err := json.Marshal(cfg)
 	if err != nil {
@@ -36,16 +38,16 @@ func write(cfg Config) error {
 	return nil
 }
 
-func (c Config) SetUser(username string) error {
+func (c *Config) SetUser(username string) error {
 	c.Username = username
 	err := write(c)
 	if err != nil {
-		return fmt.Errorf("error fetching username")
+		return fmt.Errorf("error fetching username: %w", err)
 	}
 	return nil
 }
 
-func Load_json() (Config, error) {
+func Read() (Config, error) {
 	path, err := getConfigFilePath()
 	if err != nil {
 		fmt.Println("error fetching the home directory")
