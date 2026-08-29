@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/cm-brown/gator-rss/internal/config"
 )
 
@@ -15,9 +16,16 @@ type command struct {
 }
 
 func handlerLogin(s *state, cmd command) error {
-	if len(command.args) = 0 {
+	if len(cmd.args) == 0 {
 		return errors.New("Must provide an argument with command")
 	}
 
+	err := s.cfg.SetUser(cmd.args[0])
+	if err != nil {
+		return err
+	}
 
+	fmt.Println("Username has been set")
+
+	return nil
 }
