@@ -11,12 +11,10 @@ func main() {
 	if err != nil {
 		log.Fatal("error reading config file: ", err)
 	}
-	if err = cfg.SetUser("Cameron"); err != nil {
-		log.Fatal("error setting user:", err)
+
+	appState := state{
+		cfg: &cfg,
 	}
-	cfg, err = config.Read()
-	if err != nil {
-		log.Fatal("error reading config file: ", err)
-	}
+
 	fmt.Println(cfg)
 }
