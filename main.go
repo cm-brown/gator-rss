@@ -16,5 +16,11 @@ func main() {
 		cfg: &cfg,
 	}
 
-	fmt.Println(cfg)
+	appCommands := commands{
+		command: make(map[string]func(*state, command) error),
+	}
+
+	appCommands.register("login", handlerLogin)
+
+	fmt.Println(appState, appCommands)
 }
