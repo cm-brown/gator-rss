@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/cm-brown/gator-rss/internal/config"
+	"github.com/cm-brown/gator-rss/internal/database"
 )
 
 type state struct {
+	db  *database.Queries
 	cfg *config.Config
 }
 
