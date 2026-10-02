@@ -54,3 +54,18 @@ func handlerLogin(s *state, cmd command) error {
 
 	return nil
 }
+
+func registerUser(user string) error {
+	if len(cmd.args) == 0 {
+		return errors.New("must provide an argument with command")
+	} else if len(cmd.args) > 1 {
+		return errors.New("must provide only one user per command")
+	}
+
+	userParam := database.CreateUserParams{
+		ID:        uuid.NEW,
+		CreatedAt: time.Time,
+		UpdatedAt: time.Time,
+		Name:      user,
+	}
+}
