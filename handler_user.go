@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/cm-brown/gator-rss/internal/config"
 	"github.com/cm-brown/gator-rss/internal/database"
+	"github.com/google/uuid"
+	"time"
 )
 
 type state struct {
@@ -55,7 +57,7 @@ func handlerLogin(s *state, cmd command) error {
 	return nil
 }
 
-func registerUser(user string) error {
+func registerUser(cmd Command) error {
 	if len(cmd.args) == 0 {
 		return errors.New("must provide an argument with command")
 	} else if len(cmd.args) > 1 {
@@ -63,9 +65,9 @@ func registerUser(user string) error {
 	}
 
 	userParam := database.CreateUserParams{
-		ID:        uuid.NEW,
-		CreatedAt: time.Time,
-		UpdatedAt: time.Time,
-		Name:      user,
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      cmd.args[1],
 	}
 }
