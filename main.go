@@ -31,10 +31,11 @@ func main() {
 	}
 
 	appCommands := commands{
-		command: make(map[string]func(*state, command) error),
+		registeredcommands: make(map[string]func(*state, command) error),
 	}
 
 	appCommands.register("login", handlerLogin)
+	appCommands.register("register", handlerRegister)
 
 	if len(os.Args) < 2 {
 		fmt.Println("must provide a command")

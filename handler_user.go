@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/cm-brown/gator-rss/internal/config"
 	"github.com/cm-brown/gator-rss/internal/database"
 	"github.com/google/uuid"
+	"log"
 	"time"
 )
 
@@ -14,40 +16,20 @@ type state struct {
 	cfg *config.Config
 }
 
-type command struct {
-	name string
-	args []string
-}
-
-type commands struct {
-	command map[string]func(*state, command) error
-}
-
-func (c *commands) run(s *state, cmd command) error {
-	handler, ok := c.command[cmd.name]
-	if !ok {
-		return fmt.Errorf("unknown command: %s", cmd.name)
-	}
-
-	return handler(s, cmd)
-}
-
-func (c *commands) register(name string, f func(*state, command) error) error {
-	if _, ok := c.command[name]; ok {
-		return fmt.Errorf("command already exists")
-	}
-
-	c.command[name] = f
-
-	return nil
-}
-
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.args) == 0 {
 		return errors.New("must provide an argument with command")
 	}
 
-	err := s.cfg.SetUser(cmd.args[0])
+	ctx := context.Background()
+
+	// TODO: finish GetUser error check
+	err := s.db.GetUser(ctx)
+	if err != nil {
+		log.Fatal("user does not exist")
+	}
+
+	err = s.cfg.SetUser(cmd.args[0])
 	if err != nil {
 		return err
 	}
@@ -57,17 +39,29 @@ func handlerLogin(s *state, cmd command) error {
 	return nil
 }
 
-func registerUser(cmd Command) error {
+func handlerRegister(s *state, cmd command) error {
 	if len(cmd.args) == 0 {
 		return errors.New("must provide an argument with command")
 	} else if len(cmd.args) > 1 {
 		return errors.New("must provide only one user per command")
 	}
 
+	ctx := context.Background()
+
 	userParam := database.CreateUserParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		Name:      cmd.args[1],
+		Name:      cmd.args[0],
 	}
+	result, err := s.db.CreateUser(ctx, userParam)
+	if err != nil {
+		log.Fatal(err)
+
+	}
+
+	s.cfg.Username = result.Name
+	fmt.Printf("user, %s, was created", result.Name)
+
+	return nil
 }
