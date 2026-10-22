@@ -37,6 +37,7 @@ func main() {
 	appCommands.register("login", handlerLogin)
 	appCommands.register("register", handlerRegister)
 	appCommands.register("reset", handlerReset)
+	appCommands.register("users", handlerGetUsers)
 
 	if len(os.Args) < 2 {
 		fmt.Println("must provide a command")
