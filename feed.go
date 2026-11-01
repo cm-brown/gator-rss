@@ -1,34 +1,34 @@
 package main
 
-import(
-	"fmt"
+import (
 	"context"
+	"fmt"
 	"net/http"
 )
 
-struct RSSFeed struct {
+type RSSFeed struct {
 	Channel struct {
-		Title string `xml:"title"`
-		Link string `xml:"link"`
-		Description string `xml:"description"`
-		Item []RSSItem `xml:"item"`
+		Title       string    `xml:"title"`
+		Link        string    `xml:"link"`
+		Description string    `xml:"description"`
+		Item        []RSSItem `xml:"item"`
 	} `xml:"channel"`
 }
 
-struct RSSItem struct {
-	Title string `xml:"title"`
-	Link string `xml:"link"`
+type RSSItem struct {
+	Title       string `xml:"title"`
+	Link        string `xml:"link"`
 	Description string `xml:"description"`
-	PubDate string `xml:"pubDate"`
+	PubDate     string `xml:"pubDate"`
 }
 
 func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
-	req, err := http.NewRequestWithContext(ctx, GET", feedURL)
+	req, err := http.NewRequestWithContext(ctx, "GET", feedURL)
 	if err != nil {
 		return nil, fmt.Errorf("error making request: %s", err)
 	}
 
 	req.Header.Set("User-Agent", "gator")
 
-	client := &http.Client {}
+	client := &http.Client{}
 }
