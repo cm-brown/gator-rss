@@ -7,7 +7,7 @@ A multi-user RSS aggregator CLI written in Go and backed by PostgreSQL. **Work i
 - [x] Config file handling (`~/.gatorconfig.json`)
 - [x] Command registry and `login` command
 - [x] Users table and type-safe queries generated with [sqlc](https://sqlc.dev)
-- [ ] Register and reset users
+- [x] Register, reset, and list users
 - [ ] Add, follow, and list feeds
 - [ ] Background worker that scrapes posts on an interval
 - [ ] Browse aggregated posts
