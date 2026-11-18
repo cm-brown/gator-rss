@@ -26,9 +26,9 @@ type RSSItem struct {
 }
 
 func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", feedURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, feedURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error making request: %s", err)
+		return nil, fmt.Errorf("error making request: %w", err)
 	}
 
 	req.Header.Set("User-Agent", "gator")
@@ -36,20 +36,32 @@ func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("request failed: %s", err)
+		return nil, fmt.Errorf("request failed: %w", err)
 	}
 
 	defer resp.Body.Close()
 
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return nil, fmt.Errorf("API returned status %d", resp.StatusCode)
+	}
+
 	content, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing request: %s", err)
+		return nil, fmt.Errorf("error parsing request: %w", err)
 	}
 
 	feed := RSSFeed{}
 
-	if err := html.UnescapeString(xml.Unmarshal(content, &feed)); err != nil {
-		return nil, fmt.Errorf("error parsing data: %s", err)
+	if err := xml.Unmarshal(content, &feed); err != nil {
+		return nil, fmt.Errorf("error parsing data: %w", err)
+	}
+
+	feed.Channel.Title = html.UnescapeString(feed.Channel.Title)
+	feed.Channel.Description = html.UnescapeString(feed.Channel.Description)
+
+	for i := range feed.Channel.Item {
+		feed.Channel.Item[i].Title = html.UnescapeString(feed.Channel.Item[i].Title)
+		feed.Channel.Item[i].Description = html.UnescapeString(feed.Channel.Item[i].Description)
 	}
 	return &feed, nil
 }
